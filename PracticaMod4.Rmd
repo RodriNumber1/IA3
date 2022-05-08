@@ -268,7 +268,7 @@ datos_test_t=datos_test%>%
 cl_train=factor(datos_train$class)
 datos_train_t=as.data.frame(datos_train_t)
 datos_test_t=as.data.frame(datos_test_t)
-dt2=rpart(cl_train~.,data=datos_train_t,control = rpart.control(cp = 0.01))
+dt2=rpart(cl_train~.,data=datos_train_t,control = rpart.control(cp = 0.001))
 rpart.plot(dt2)
 cl_test=factor(datos_test$class)
 table(predict(dt2,datos_train_t,type="class"),cl_train)
