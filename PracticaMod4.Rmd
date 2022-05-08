@@ -197,26 +197,38 @@ p11
 
 ```{r KNN}
 datos_train_t=datos_train%>%
- mutate(log_src_bytes=log(src_bytes+.5),
-        log_dst_bytes=log(dst_bytes+.5), 
-        log_duration=log(duration+.5),
-        log_diff=(diff_srv_rate+.5))%>%
-  select(log_src_bytes,log_dst_bytes,log_duration,log_diff,dst_host_same_srv_rate,dst_host_srv_count)%>%
+ mutate(log_logged_in = log(logged_in+.5),
+        log_serror_rate = log(serror_rate+.5),
+        log_srv_serror_rate = log(srv_serror_rate+.5),
+        log_same_srv_rate = log(same_srv_rate+.5),
+        log_diff_srv_rate = log(diff_srv_rate+.5),
+        log_dst_host_srv_count = log(dst_host_srv_count+.5),
+        log_dst_host_same_srv_rate = log(dst_host_same_srv_rate+.5),
+        log_dst_host_diff_srv_rate = log(dst_host_diff_srv_rate+.5),
+        log_dst_host_serror_rate = log(dst_host_serror_rate+.5),
+        log_src_bytes=log(src_bytes+.5),
+        log_dst_bytes=log(dst_bytes+.5))%>%
+  select(log_logged_in, log_serror_rate, log_srv_serror_rate, log_same_srv_rate, log_diff_srv_rate, log_dst_host_srv_count, log_dst_host_same_srv_rate, 
+         log_dst_host_diff_srv_rate, log_dst_host_serror_rate, log_src_bytes, log_dst_bytes)%>%
   scale()
-
 datos_test_t=datos_test%>%
- mutate(log_src_bytes=log(src_bytes+.5),
-        log_dst_bytes=log(dst_bytes+.5),
-         log_duration=log(duration+.5),
-        log_diff=(diff_srv_rate+.5))%>%
-  select(log_src_bytes,log_dst_bytes,log_duration,log_diff,dst_host_same_srv_rate,dst_host_srv_count)%>%
+ mutate(log_logged_in = log(logged_in+.5),
+        log_serror_rate = log(serror_rate+.5),
+        log_srv_serror_rate = log(srv_serror_rate+.5),
+        log_same_srv_rate = log(same_srv_rate+.5),
+        log_diff_srv_rate = log(diff_srv_rate+.5),
+        log_dst_host_srv_count = log(dst_host_srv_count+.5),
+        log_dst_host_same_srv_rate = log(dst_host_same_srv_rate+.5),
+        log_dst_host_diff_srv_rate = log(dst_host_diff_srv_rate+.5),
+        log_dst_host_serror_rate = log(dst_host_serror_rate+.5),
+        log_src_bytes=log(src_bytes+.5),
+        log_dst_bytes=log(dst_bytes+.5))%>%
+  select(log_logged_in, log_serror_rate, log_srv_serror_rate, log_same_srv_rate, log_diff_srv_rate, log_dst_host_srv_count, log_dst_host_same_srv_rate, 
+         log_dst_host_diff_srv_rate, log_dst_host_serror_rate, log_src_bytes, log_dst_bytes)%>%
   scale()
-
 cl=factor(datos_train$class)
 k1=knn(cl=cl,train=datos_train_t,test=datos_train_t,k=5,prob=TRUE)
 table(k1,cl)
-
-
 cl_test=factor(datos_test$class)
 k1=knn(cl=cl,train=datos_train_t,test=datos_test_t,k=5,prob=TRUE)
 table(k1,cl_test)
@@ -225,32 +237,42 @@ table(k1,cl_test)
 
 ```{r DT}
 datos_train_t=datos_train%>%
-  mutate(log_src_bytes=log(src_bytes+.5),
-         log_dst_bytes=log(dst_bytes+.5),
-         log_duration=log(duration+.5),
-         log_diff=(diff_srv_rate+.5))%>%
-  select(log_src_bytes,log_dst_bytes,log_duration,log_diff,dst_host_same_srv_rate,dst_host_srv_count)
-
-
+ mutate(log_logged_in = log(logged_in+.5),
+        log_serror_rate = log(serror_rate+.5),
+        log_srv_serror_rate = log(srv_serror_rate+.5),
+        log_same_srv_rate = log(same_srv_rate+.5),
+        log_diff_srv_rate = log(diff_srv_rate+.5),
+        log_dst_host_srv_count = log(dst_host_srv_count+.5),
+        log_dst_host_same_srv_rate = log(dst_host_same_srv_rate+.5),
+        log_dst_host_diff_srv_rate = log(dst_host_diff_srv_rate+.5),
+        log_dst_host_serror_rate = log(dst_host_serror_rate+.5),
+        log_src_bytes=log(src_bytes+.5),
+        log_dst_bytes=log(dst_bytes+.5))%>%
+  select(log_logged_in, log_serror_rate, log_srv_serror_rate, log_same_srv_rate, log_diff_srv_rate, log_dst_host_srv_count, log_dst_host_same_srv_rate, 
+         log_dst_host_diff_srv_rate, log_dst_host_serror_rate, log_src_bytes, log_dst_bytes)
 datos_test_t=datos_test%>%
-  mutate(log_src_bytes=log(src_bytes+.5),
-         log_dst_bytes=log(dst_bytes+.5),
-         log_duration=log(duration+.5),
-         log_diff=(diff_srv_rate+.5))%>%
-  select(log_src_bytes,log_dst_bytes,log_duration,log_diff,dst_host_same_srv_rate,dst_host_srv_count)
-
+ mutate(log_logged_in = log(logged_in+.5),
+        log_serror_rate = log(serror_rate+.5),
+        log_srv_serror_rate = log(srv_serror_rate+.5),
+        log_same_srv_rate = log(same_srv_rate+.5),
+        log_diff_srv_rate = log(diff_srv_rate+.5),
+        log_dst_host_srv_count = log(dst_host_srv_count+.5),
+        log_dst_host_same_srv_rate = log(dst_host_same_srv_rate+.5),
+        log_dst_host_diff_srv_rate = log(dst_host_diff_srv_rate+.5),
+        log_dst_host_serror_rate = log(dst_host_serror_rate+.5),
+        log_src_bytes=log(src_bytes+.5),
+        log_dst_bytes=log(dst_bytes+.5))%>%
+  select(log_logged_in, log_serror_rate, log_srv_serror_rate, log_same_srv_rate, log_diff_srv_rate, log_dst_host_srv_count, log_dst_host_same_srv_rate, 
+         log_dst_host_diff_srv_rate, log_dst_host_serror_rate, log_src_bytes, log_dst_bytes)
 
 cl_train=factor(datos_train$class)
 datos_train_t=as.data.frame(datos_train_t)
 datos_test_t=as.data.frame(datos_test_t)
-dt1=rpart(cl_train~.,data=datos_train_t,control = rpart.control(cp = 0.01))
-rpart.plot(dt1)
-
+dt2=rpart(cl_train~.,data=datos_train_t,control = rpart.control(cp = 0.01))
+rpart.plot(dt2)
 cl_test=factor(datos_test$class)
-table(predict(dt1,datos_train_t,type="class"),cl_train)
-table(predict(dt1,datos_test_t,type="class"),cl_test)
-
-
+table(predict(dt2,datos_train_t,type="class"),cl_train)
+table(predict(dt2,datos_test_t,type="class"),cl_test)
 ```
 
 # Resultados
