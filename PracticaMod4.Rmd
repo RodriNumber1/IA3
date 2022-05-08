@@ -135,23 +135,66 @@ p5 <- datos_train %>% mutate(log10_srv_serror_rate = log10(srv_serror_rate+0.5))
   ggplot(aes(x=log10_srv_serror_rate, colour=class)) +
     geom_density(lwd=2)
 p5
+
 #ggplot(Train_data, aes(rerror_rate,fill=class, colour=class))+ geom_bar()+ ggtitle("Anomalías por rerror_rate")
 ggplot(Train_data, aes(same_srv_rate,fill=class, colour=class))+ geom_bar()+ ggtitle("Anomalías por same_srv_rate")
+
 p6 <- datos_train %>% mutate(log10_same_srv_rate = log10(same_srv_rate+0.5)) %>%
   select(class, log10_same_srv_rate) %>%
   na.omit() %>%
   ggplot(aes(x=log10_same_srv_rate, colour=class)) +
     geom_density(lwd=2)
 p6
+
 ggplot(Train_data, aes(diff_srv_rate,fill=class, colour=class))+ geom_bar()+ ggtitle("Anomalías por diff_srv_rate")
+
+p7 <- datos_train %>% mutate(log10_diff_srv_rate = log10(diff_srv_rate+0.5)) %>%
+  select(class, log10_diff_srv_rate) %>%
+  na.omit() %>%
+  ggplot(aes(x=log10_diff_srv_rate, colour=class)) +
+    geom_density(lwd=2)
+p7
+
 #ggplot(Train_data, aes(srv_diff_host_rate,fill=class, colour=class))+ geom_bar()+ ggtitle("Anomalías por srv_diff_host_rate")
 #ggplot(Train_data, aes(dst_host_count,fill=class, colour=class))+ geom_bar()+ ggtitle("Anomalías por dst_host_count")
 ggplot(Train_data, aes(dst_host_srv_count,fill=class, colour=class))+ geom_bar()+ ggtitle("Anomalías por dst_host_srv_count")
+
+p8 <- datos_train %>% mutate(log10_dst_host_srv_count = log10(dst_host_srv_count+0.5)) %>%
+  select(class, log10_dst_host_srv_count) %>%
+  na.omit() %>%
+  ggplot(aes(x=log10_dst_host_srv_count, colour=class)) +
+    geom_density(lwd=2)
+p8
+
 ggplot(Train_data, aes(dst_host_same_srv_rate,fill=class, colour=class))+ geom_bar()+ ggtitle("Anomalías por dst_host_same_srv_rate")
+
+p9 <- datos_train %>% mutate(log10_dst_host_same_srv_rate = log10(dst_host_same_srv_rate+0.5)) %>%
+  select(class, log10_dst_host_same_srv_rate) %>%
+  na.omit() %>%
+  ggplot(aes(x=log10_dst_host_same_srv_rate, colour=class)) +
+    geom_density(lwd=2)
+p9
+
 ggplot(Train_data, aes(dst_host_diff_srv_rate,fill=class, colour=class))+ geom_bar()+ ggtitle("Anomalías por dst_host_diff_srv_rate")
+
+p10 <- datos_train %>% mutate(log10_dst_host_diff_srv_rate = log10(dst_host_diff_srv_rate+0.5)) %>%
+  select(class, log10_dst_host_diff_srv_rate) %>%
+  na.omit() %>%
+  ggplot(aes(x=log10_dst_host_diff_srv_rate, colour=class)) +
+    geom_density(lwd=2)
+p10
+
 #ggplot(Train_data, aes(dst_host_same_src_port_rate,fill=class, colour=class))+ geom_bar()+ ggtitle("Anomalías por dst_host_same_src_port_rate")
 #ggplot(Train_data, aes(dst_host_srv_diff_host_rate,fill=class, colour=class))+ geom_bar()+ ggtitle("Anomalías por dst_host_srv_diff_host_rate")
 ggplot(Train_data, aes(dst_host_serror_rate,fill=class, colour=class))+ geom_bar()+ ggtitle("Anomalías por dst_host_serror_rate")
+
+p11 <- datos_train %>% mutate(log10_dst_host_serror_rate = log10(dst_host_serror_rate+0.5)) %>%
+  select(class, log10_dst_host_serror_rate) %>%
+  na.omit() %>%
+  ggplot(aes(x=log10_dst_host_serror_rate, colour=class)) +
+    geom_density(lwd=2)
+p11
+
 #ggplot(Train_data, aes(dst_host_srv_serror_rate,fill=class, colour=class))+ geom_bar()+ ggtitle("Anomalías por dst_host_srv_serror_rate")
 #ggplot(Train_data, aes(dst_host_rerror_rate,fill=class, colour=class))+ geom_bar()+ ggtitle("Anomalías por dst_host_rerror_rate")
 #ggplot(Train_data, aes(dst_host_srv_rerror_rate,fill=class, colour=class))+ geom_bar()+ ggtitle("Anomalías por dst_host_srv_rerror_rate")
