@@ -1,0 +1,179 @@
+---
+title: "Práctica Módulo IV"
+subtitle: "Inteligencia Artificial -- Grado en Ingeniería de la Ciberseguridad -- 2021 - 2022"
+author: "Fernando González, Raúl Santiago y Rodrigo Regaliza"
+date: '2022-05-07'
+output:
+  bookdown::html_document2:
+    toc: true  # Incluye tabla de contenidos automática
+    toc_float: true  # Mantener ToC visible a la izquierda
+    toc_depth: 2  # Incluir dos niveles de profundidad en ToC
+    number_sections: true  # Autonumerado de secciones
+    theme: flatly  # Tema Bootstrap a emplear, 
+                  # se puede elegir entre las opciones por defecto de Bootstrap:
+                  # default, cerulean, journal, flatly, readable, spacelab, 
+                  # united, cosmo, lumen, paper, sandstone, simplex, and yeti
+    code_folding: show  # Oculta el código de R, incluye un botón para mostrarlo
+                        # u ocultarlo
+    df_print: paged  # Utiliza paged para mostrar mejor las tablas de datos
+    fig_width: 7  # Anchura por defecto de las graficas (en pulgadas)
+    fig_height: 5  # Altura por defecto de las gráficas (en pulgadas)
+    fig_caption: true  # Incluye pie de figura y tablas
+                      # El texto del caption se incluye en el argumento fig.cap
+                      # en cada chunk
+    link-citations: yes  # Enlaces a entradas de bibliografía al final
+---
+
+# Introducción
+
+En esta práctica vamos a estudiar la detección de intrusiones, que puede ser modelada como un problema de clasificación binaria. Es decir, el objetivo es determinar si el tráfico de la red es un comportamiento anormal o no.
+
+```{r librerias', echo=True, message=FALSe}
+
+library(class)
+library(dplyr)
+library(ggplot2)
+library(rpart)
+library(rpart.plot)
+
+```
+
+# Los datos
+
+El conjunto de datos a auditar consiste en una amplia variedad de intrusiones simuladas en un entorno de red militar. Se creó un entorno para adquirir datos de volcado de TCP/IP sin procesar para una red simulando una LAN típica de las Fuerzas Aéreas estadounidenses. La LAN se enfocó como un entorno real y se atacó con múltiples ataques.
+
+Una conexión es una secuencia de paquetes TCP que comienzan y terminan en algún momento entre los cuales los datos fluyen hacia y desde una dirección IP de origen a una dirección IP de destino bajo algún protocolo bien definido. Además, cada conexión se etiqueta como *normal* o como *ataque* con exactamente un tipo de ataque específico. Cada registro de conexión consta de unos 100 bytes.
+
+Para cada conexión TCP/IP, se obtienen 41 características cuantitativas y cualitativas de los datos normales y de ataque (3 cualitativas y 38 cuantitativas). La variable de clase tiene dos categorías
+
+-   Normal
+-   Anómala
+
+```{r datos, echo=TRUE}
+Train_data <- read.csv("./datos/Train_data.csv")
+Test_data <- read.csv("./datos/Test_data.csv")
+
+# dividimos la muestra train
+set.seed(21781369)
+n=dim(Train_data)[1]
+p_train=0.5
+p_test=0.5
+
+indices_train=sample(1:n, n*p_train, replace=FALSE)
+indices_test=sample(c(1:n)[-indices_train], n*p_test, replace=FALSE)
+
+n_train=length(indices_train)
+datos_train=Train_data[indices_train,]
+datos_test=Train_data[indices_test,]
+```
+
+Vamos a ver los primero datos
+
+```{r datos_inicio, echo=TRUE}
+head(Train_data)
+```
+
+# EDA
+
+En primer lugar estudiamos las variables de la base de datos:
+
+```{r EDA1, echo=TRUE}
+
+p2 <- datos_train %>% mutate(log10_srcbytes = log10(src_bytes+0.5),log10_dstbytes=log10(dst_bytes+0.5)) %>%
+  select(class, log10_dstbytes) %>%
+  na.omit() %>%
+  ggplot(aes(x=log10_dstbytes, colour=class)) +
+    geom_density(lwd=2)
+p2
+
+ggplot(Train_data, aes(protocol_type)) + geom_bar()+ ggtitle("Número de conexiones por protocolo de red")
+
+
+ggplot(Train_data, aes(protocol_type,fill=class))+ geom_bar()+ ggtitle("Anomalías por tipo de protocolo")
+```
+
+# Modelos de Aprendizaje Máquina
+
+```{r KNN (profe)}
+
+datos_train_t = datos_train %>% 
+  mutate(log_src_bytes = log(src_bytes+0.5),
+         log_dst_bytes = log(dst_bytes+0.5),
+         log_duration = log(duration+0.5),
+         log_diff = (diff_srv_rate+0.5))%>%
+  select(log_src_bytes,log_dst_bytes,log_duration,log_diff,dst_host_same_srv_rate,dst_host_srv_count)%>%
+  scale()
+
+datos_test_t=datos_test%>%
+ mutate(log_src_bytes=log(src_bytes+.5),
+        log_dst_bytes=log(dst_bytes+.5),
+        log_duration=log(duration+.5),
+        log_diff=(diff_srv_rate+.5))%>%
+  select(log_src_bytes,log_dst_bytes,log_duration,log_diff,dst_host_same_srv_rate,dst_host_srv_count)%>%
+  scale()
+
+cl=factor(datos_train$class)
+k1=knn(cl=cl,train=datos_train_t,test=datos_train_t,k=5,prob=TRUE)
+table(k1,cl)
+
+cl_test=factor(datos_test$class)
+k1=knn(cl=cl,train=datos_train_t,test=datos_test_t,k=5,prob=TRUE)
+table(k1,cl_test)
+```
+
+```{r KNN (nuestro)}
+datos_train_t = datos_train %>%
+  filter(!is.na(flag))%>%
+  mutate(log_duration = log(duration + 0.5))%>%
+  select(log_duration, )%>%
+  scale()
+
+datos_test_t=datos_test%>%
+ mutate(log_duration = log(duration + 0.5))%>%
+  select(log_duration, dst_host_same_srv_rate)%>%
+  scale()
+
+cl=factor(datos_train$class)
+k1=knn(cl=cl,train=datos_train_t,test=datos_train_t,k=1,prob=TRUE)
+table(k1,cl)
+
+cl_test=factor(datos_test$class)
+k1=knn(cl=cl,train=datos_train_t,test=datos_test_t,k=1,prob=TRUE)
+table(k1,cl_test)
+```
+
+```{r DT}
+
+datos_train_t=datos_train%>%
+  mutate(log_src_bytes=log(src_bytes+.5),
+         log_dst_bytes=log(dst_bytes+.5),
+         log_duration=log(duration+.5),
+         log_diff=(diff_srv_rate+.5))%>%
+  select(log_src_bytes,log_dst_bytes,log_duration,log_diff,dst_host_same_srv_rate,dst_host_srv_count)
+
+
+datos_test_t=datos_test%>%
+  mutate(log_src_bytes=log(src_bytes+.5),
+         log_dst_bytes=log(dst_bytes+.5),
+         log_duration=log(duration+.5),
+         log_diff=(diff_srv_rate+.5))%>%
+  select(log_src_bytes,log_dst_bytes,log_duration,log_diff,dst_host_same_srv_rate,dst_host_srv_count)
+
+cl_train=factor(datos_train$class)
+datos_train_t=as.data.frame(datos_train_t)
+datos_test_t=as.data.frame(datos_test_t)
+dt1=rpart(cl_train~.,data=datos_train_t,control = rpart.control(cp = 0.01))
+rpart.plot(dt1)
+
+cl_test=factor(datos_test$class)
+table(predict(dt1,datos_train_t,type="class"),cl_train)
+table(predict(dt1,datos_test_t,type="class"),cl_test)
+```
+
+# Resultados
+
+## Explicabilidad
+
+# Evaluación
+
+# Conclusiones
